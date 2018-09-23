@@ -1,31 +1,32 @@
-﻿using BuildLibrary.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BuildLibrary.Interfaces;
+using BuildLibrary.TeamBuilders;
 
 namespace BuildLibrary.BuildElems
 {
     internal class Door : IPart
     {
-        private int _count;
+        #region FIELDS
+        private int _crLenght;
+        private int _fullLenght;
+        private decimal _pct;
+        #endregion
 
-        public void AddSlice()
+        #region CTOR
+        public Door()
         {
-            _count++;
+            _fullLenght = 1;
+            _pct = (_crLenght * 100) / _fullLenght;
+        }
+        #endregion
+
+        #region IRELIZ
+        public void AddSlice(Worker builder)
+        {
+            _crLenght++;
+            _pct = (_crLenght * 100) / _fullLenght;
         }
 
-        public bool IsCreated(int count)
-        {
-            return Int32.Equals(count, this._count);
-        }
-
-        public int Remained(int count)
-        {
-            if (_count == count)
-                return 0;
-            return _count - count;
-        }
+        public decimal Pct { get { return _pct; } }
+        #endregion
     }
 }
