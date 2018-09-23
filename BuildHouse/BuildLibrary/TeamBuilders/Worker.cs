@@ -1,9 +1,9 @@
-﻿using BuildLibrary.Interfaces;
+using BuildLibrary.Interfaces;
 using System;
 
 namespace BuildLibrary.TeamBuilders
 {
-    internal class Worker : IWorker
+    public class Worker : IWorker
     {
         #region FILEDS
         private int _output;
@@ -13,10 +13,11 @@ namespace BuildLibrary.TeamBuilders
         #endregion
 
         #region CTORS
-        public Worker(string name)
+        internal Worker(string name)
         {
             Name = name;
             _position = "Builder";
+            Output = 100;
         }
         #endregion
 
@@ -30,7 +31,7 @@ namespace BuildLibrary.TeamBuilders
 
             set
             {
-                if (!BuildExceptions.WorkerException.NameException(value))
+                if (!BuildExceptions.Exception.NameException(value))
                     throw new ArgumentNullException("Неправильно введены данные");
                 _name = value;
             }
@@ -44,21 +45,40 @@ namespace BuildLibrary.TeamBuilders
             }
         }
 
-        public void CheckWork(IPart obj, int _workRemaining)
+        public bool CheckWork(IPart obj)
         {
-            _outInfo[_output] = $"{obj.GetType()} {obj.Remained(_workRemaining)} {obj.IsCreated(_workRemaining)}";
+            if (obj.Pct == 100)
+                return true;
+            return false;
+        }
+        #endregion
+
+        #region METHODS
+        internal void AddSlice(IPart obj)
+        {
+            string[] _tempType;
+            _tempType = obj.GetType().ToString().Split('.');
+
+            obj.AddSlice(this);
+            _outInfo[_output] = $"Name: {this.Name}      Position: {this.Position}         Type: {_tempType[2]}         Percent: {obj.Pct}";
             _output++;
         }
         #endregion
 
-        public int Output
+        #region PROPS
+        internal int Output
         {
             get { return _output; }
-            protected set
+            set
             {
-                _output = value;
                 _outInfo = new string[value];
             }
         }
+
+        internal string[] OutputInfo
+        {
+            get { return _outInfo; }
+        }
+        #endregion
     }
 }
