@@ -1,12 +1,46 @@
+using BuildLibrary.BuildElems;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BuildLibrary.TeamBuilders
 {
     public class Team
     {
+        #region FIELDS
+        private TeamLeader _teamL;
+        private Worker[] _builders;
+        #endregion
+
+        #region METHODS
+        public Team(int buildersCount)
+        {
+            if (buildersCount <= 0)
+                throw new ArgumentOutOfRangeException("Неверные аргументы");
+
+            _teamL = new TeamLeader(Randomer.RandomName(), buildersCount);
+            _builders = new Worker[buildersCount];
+            for (int i = 0; i < buildersCount; i++)
+            {
+                _builders[i] = new Worker(Randomer.RandomName());
+            }
+        }
+
+        public void StartBuilding(House house)
+        {
+            int count = 0;
+            while (house[count] != null)
+            {
+                if (!_teamL.CheckWork(house[count]))
+                    _teamL.SetWork(house[count], _builders);
+                else
+                    count++;
+            }
+            _teamL.MakeReport(_builders);
+        }
+        #endregion
+
+        #region PROPS
+        public string[] GetReport
+        { get { return _teamL.GetReport; } }
+        #endregion
     }
 }
