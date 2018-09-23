@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BuildLibrary.TeamBuilders;
 
 namespace BuildLibrary.Interfaces
 {
-    internal interface IPart
+    public interface IPart
     {
-        bool IsCreated(int value);
-        int Remained(int value);
+        decimal Pct {get;}
+        void AddSlice(Worker builder);
     }
 }
