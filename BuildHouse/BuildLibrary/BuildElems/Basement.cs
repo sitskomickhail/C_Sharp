@@ -1,6 +1,5 @@
 using BuildLibrary.Interfaces;
 using BuildLibrary.TeamBuilders;
-using System;
 
 namespace BuildLibrary.BuildElems
 {
@@ -8,34 +7,26 @@ namespace BuildLibrary.BuildElems
     {
         #region FIELDS
         private int _crLenght;
+        private int _fullLenght;
+        private decimal _pct;
+        #endregion
+
+        #region CTOR
+        public Basement(int lenght)
+        {
+            _fullLenght = lenght;
+            _pct = (_crLenght * 100) / _fullLenght;
+        }
         #endregion
 
         #region IRELIZ
-        public bool IsCreated(int _length)
-        {
-            if (Remained(_length) == 0)
-                return true;
-            return false;
-        }
-
-        public int Remained(int _length)
-        {
-            if (_length == _crLenght)
-                return 0;
-            return _length - _crLenght;
-        }
-        #endregion
-
-        #region METHODS
         public void AddSlice(Worker builder)
         {
             _crLenght++;
-            builder.CheckWork();
+            _pct = (_crLenght * 100) / _fullLenght;
         }
-        #endregion
 
-        #region PROP
-        public int CreatedLength { get { return _crLenght; } }
+        public decimal Pct { get { return _pct; } }
         #endregion
     }
 }
