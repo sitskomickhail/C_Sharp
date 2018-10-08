@@ -20,7 +20,7 @@ namespace Project
             IEnumerable<XElement> countries = from cntr in _xmlDir.Root.Elements("country") select cntr;
             //foreach (XElement item in countries)
             //{
-            //    Console.WriteLine("{0}   -    {1}", item.Attribute("name").Value, item.Attribute("population").Value);
+            //    Console.WriteLine("{0}   -    {1}", item.Attribute("name").Value.Trim(), item.Attribute("population").Value.Trim());
             //}
             #endregion
 
@@ -64,16 +64,16 @@ namespace Project
                                    where cap.Element("city")?.Element("name")?.Value != null
                                    select new
                                    {
-                                       CapName = cap.Element("city").Element("name").Value,
-                                       CountryName = cntr.Attribute("name").Value
+                                       CapName = cap.Element("city").Element("name").Value.Trim(),
+                                       CountryName = cntr.Attribute("name").Value.Trim()
                                    };
             var capital_prov = from cntr in _xmlDir.Root.Elements("country")
                                join anothercap in _xmlDir.Root.Elements("country") on cntr.Attribute("capital").Value equals anothercap.Element("province")?.Element("city")?.Attribute("id").Value
                                where anothercap.Element("province")?.Element("city")?.Value != null
                                select new
                                {
-                                   CapName = anothercap.Element("province").Element("city").Element("name").Value,
-                                   CountryName = cntr.Attribute("name").Value
+                                   CapName = anothercap.Element("province").Element("city").Element("name").Value.Trim(),
+                                   CountryName = cntr.Attribute("name").Value.Trim()
                                };
 
 
@@ -86,25 +86,36 @@ namespace Project
             //    Console.WriteLine("Country  {0}{1}", item.CountryName, item.CapName);
             //}
             #endregion
-            
+
+            #region FIFTH
+            //Вывод: <название страны>  <количество граничащих стран> <название стран>.
 
             var biggest = from cntr in _xmlDir.Root.Elements("country")
-                          join chn in _xmlDir.Root.Elements("country") on cntr.Attribute("id").Value equals chn.Element("border")?.Attribute("country").Value
-                          //group cntr by chn.Element("border")?.Attribute("country").Value into gr
+                          where cntr.Elements("border").Count() == (from find in _xmlDir.Root.Elements("country") select find.Elements("border").Count()).Max()
                           select new
                           {
                               Name = cntr.Attribute("name").Value,
-                              CountriesName = chn.Element("name").Value,
-                              Count = chn.Value.Count()
+                              Countries = (from borders in cntr.Elements("border")
+                                           join chnm in _xmlDir.Root.Elements("country") on borders.Attribute("country").Value equals chnm.Attribute("id")?.Value
+                                           select new
+                                           {
+                                               Count = cntr.Elements("border").Count(),
+                                               BorName = chnm.Attribute("name").Value.Trim()
+                                           })
                           };
-
-            Console.WriteLine(biggest.Count());
-            int i = 1;
+            
+            int i = 0;
             foreach (var border in biggest)
             {
-                Console.WriteLine(i + " {0} - {1} - {2}", border.Name, border.CountriesName, border.Count);
-                i++;
+                    Console.WriteLine("{0}", border.Name);
+                foreach (var item in border.Countries)
+                {
+                    if (i < 1) { Console.WriteLine(item.Count); Console.WriteLine(); }
+                    Console.WriteLine("{0}", item.BorName);
+                    i++;
+                }
             }
+            #endregion
 
             Console.Read();
         }
