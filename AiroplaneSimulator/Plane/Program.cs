@@ -11,15 +11,31 @@ namespace Pilot
     {
         static void Main(string[] args)
         {
-            Airoplane plane = new Airoplane();
-            List<Dispatcher> disps = new List<Dispatcher>(2);
-            Terminal.CheckGame(plane, disps);
+            Airoplane plane = new Airoplane(2);
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Shift + →\t(+50 speed)\t" +
+                              "Shift + ↑\t(+50 height)\n" +
+                              "Shift + ←\t(-50 speed)\t" +
+                              "Shift + ↓\t(-50 height)");
+            Console.WriteLine("\t\tPress Any Key to start!!!");
             while (true)
             {
-                disps.ForEach(d => Console.WriteLine("Диспетчер: {0}", d.Height));
-
+                Terminal.ShowDispInfo(plane);
+                Console.WriteLine();
+                Terminal.ShowPlainInfo(plane);
+                Terminal.Manage(plane);
+                if (plane.PlaneHeight == 0 && plane.Speed == 0 && plane.FlightType == PlainType.Landing)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Вы прошли испытание набрав: {0} штрафных очков!", plane.ErrorPoints());
+                    break;
+                }
+                Thread.Sleep(50);
+                Console.Clear();
             }
+
+            Console.ReadLine();
         }
     }
 }
